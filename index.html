@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DB道場">
+<meta name="theme-color" content="#1f4fa8">
+<title>DBスペシャリスト 午前Ⅱ道場</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{
+  --bg:#f4f4f8;--card:#fff;--ink:#1d1d26;--sub:#666a78;--line:#dcdde6;
+  --pri:#1f4fa8;--pri-soft:#e3ecfb;--ok:#14845a;--ok-soft:#dff4ea;--ng:#c4352e;--ng-soft:#fbe4e2;
+  --star:#d99a00;--bar:#1f4fa8;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#14141b;--card:#1f1f2a;--ink:#ececf3;--sub:#a0a3b3;--line:#343546;
+  --pri:#8fb4ff;--pri-soft:#1f2c4a;--ok:#4cc98f;--ok-soft:#173a2b;--ng:#ff7b73;--ng-soft:#46201e;
+  --star:#ffc53d;--bar:#8fb4ff;
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:16px;line-height:1.6}
+header{position:sticky;top:0;z-index:5;background:var(--pri);color:#fff;padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;display:flex;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .hstat{font-size:12px;opacity:.9;text-align:right;line-height:1.3}
+main{max-width:760px;margin:0 auto;padding:12px 12px calc(84px + env(safe-area-inset-bottom))}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:5;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;color:var(--sub);padding:8px 0 7px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button svg{width:22px;height:22px}
+nav button.on{color:var(--pri);font-weight:700}
+.badge{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--ng);color:#fff;font-size:10px;line-height:18px;text-align:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.card h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.card h2 .r{margin-left:auto;font-weight:400;font-size:12px;color:var(--sub)}
+.muted{color:var(--sub);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}
+.chk{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:7px 8px;font-size:13.5px;user-select:none;cursor:pointer;background:var(--card)}
+.chk input{width:17px;height:17px;margin:0;accent-color:var(--pri)}
+.chk.on{border-color:var(--pri);background:var(--pri-soft)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:9px 14px;font-size:14px;cursor:pointer}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:700}
+.btn.ng{color:var(--ng);border-color:var(--ng)}
+.btn.block{display:block;width:100%;padding:13px;font-size:16px}
+.btn:disabled{opacity:.45}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.stats3 b{display:block;font-size:22px}
+.stats3 span{font-size:12px;color:var(--sub)}
+.qhead{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;font-size:13px}
+.tag{display:inline-block;border-radius:6px;padding:1px 8px;font-size:12px;background:var(--pri-soft);color:var(--pri)}
+.tag.gray{background:var(--bg);color:var(--sub);border:1px solid var(--line)}
+.qtext{white-space:pre-wrap;word-break:break-word;font-size:16px}
+.qimg{display:block;width:100%;margin:0;border-radius:6px;background:#fff;cursor:zoom-in}
+.imgwrap{margin:10px 0;border:1px solid var(--line);border-radius:8px;overflow-x:auto;background:#fff;-webkit-overflow-scrolling:touch}
+.qimg.inl{display:inline-block;width:auto;max-width:100%;margin:6px 0;vertical-align:middle}
+.qimg.zoom{max-width:none;width:200%;cursor:zoom-out}
+.qtext,.choice .t{overflow-x:auto}
+.imgnote{font-size:11.5px;color:var(--sub);margin-top:4px}
+.linkbtn{background:none;border:0;color:var(--pri);font-size:13px;padding:6px 0;cursor:pointer}
+@media (prefers-color-scheme:dark){.qimg{filter:invert(.88) hue-rotate(180deg)}.imgwrap{background:#222}}
+.choices{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.choice{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:11px 12px;font-size:15px;line-height:1.55;cursor:pointer;width:100%}
+.choice .k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--pri-soft);color:var(--pri);font-weight:700;display:flex;align-items:center;justify-content:center}
+.choice .t{white-space:pre-wrap;word-break:break-word;flex:1}
+.choice.ok{border-color:var(--ok);background:var(--ok-soft)}
+.choice.ok .k{background:var(--ok);color:#fff}
+.choice.ng{border-color:var(--ng);background:var(--ng-soft)}
+.choice.ng .k{background:var(--ng);color:#fff}
+.choices.small .choice{padding:9px 0;justify-content:center;font-size:18px}
+.choices.small{flex-direction:row}
+.crow{display:flex;gap:6px;align-items:stretch}
+.crow .choice{flex:1;min-width:0}
+.xbtn{flex:none;width:42px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--sub);font-size:15px;cursor:pointer;padding:0}
+.crow.out .choice{opacity:.42}
+.crow.out .choice .t,.crow.out .choice .k{text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:var(--ng)}
+.crow.out .xbtn{background:var(--ng-soft);color:var(--ng);border-color:var(--ng)}
+.choices.small .crow{flex:1;flex-direction:column}
+.choices.small .xbtn{width:100%;height:32px}
+.elimhint{font-size:11.5px;color:var(--sub);margin-top:6px;text-align:right}
+.result{border-radius:10px;padding:10px 12px;margin-top:12px;font-weight:700}
+.result.ok{background:var(--ok-soft);color:var(--ok)}
+.result.ng{background:var(--ng-soft);color:var(--ng)}
+.occ{margin:6px 0 0;padding:0;list-style:none;font-size:13.5px}
+.occ li{padding:5px 0;border-bottom:1px dashed var(--line);display:flex;gap:8px;align-items:center}
+.occ li:last-child{border-bottom:0}
+.occ a{color:var(--pri);font-size:12.5px;margin-left:auto;white-space:nowrap}
+textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit;font-size:14px;background:var(--bg);color:var(--ink)}
+.toolbar{display:flex;gap:8px;margin-top:12px}
+.toolbar .btn{flex:1}
+.star.on{color:var(--star);border-color:var(--star);font-weight:700}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:4px 0 10px}
+.progress i{display:block;height:100%;background:var(--pri)}
+.list .item{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.list .item:last-child{border-bottom:0}
+.list .item .main{flex:1;min-width:0;cursor:pointer}
+.list .item .ttl{font-size:13px;color:var(--sub)}
+.list .item .ex{font-size:14px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+table.st{width:100%;border-collapse:collapse;font-size:13px}
+table.st th,table.st td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.st th:first-child,table.st td:first-child{text-align:left;white-space:normal}
+table.st th{color:var(--sub);font-weight:600;font-size:12px}
+.barcell{width:34%}
+.bar{height:9px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--bar)}
+.bar i.low{background:var(--ng)}
+.weak{color:var(--ng);font-weight:700}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{flex:1;white-space:nowrap;border:0;background:var(--card);color:var(--ink);padding:7px 4px;font-size:13px}
+.seg button.on{background:var(--pri);color:#fff;font-weight:700}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.switch:first-of-type{border-top:0}
+.switch input{width:20px;height:20px;accent-color:var(--pri)}
+.empty{text-align:center;color:var(--sub);padding:30px 0}
+.trend{display:flex;align-items:flex-end;gap:3px;height:90px;margin-top:6px}
+.trend div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.trend .b{width:100%;background:var(--pri-soft);border-radius:3px 3px 0 0;position:relative}
+.trend .b i{position:absolute;bottom:0;left:0;right:0;background:var(--bar);border-radius:3px 3px 0 0}
+.trend span{font-size:9px;color:var(--sub);margin-top:2px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:8px 14px;border-radius:20px;font-size:13px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:.92}
+details summary{cursor:pointer;color:var(--pri);font-size:14px}
+.foot{font-size:11.5px;color:var(--sub);text-align:center;margin:18px 0 6px}
+</style>
+</head>
+<body>
+<header><h1 id="ttl">DB午前Ⅱ道場</h1><div class="hstat" id="hstat"></div></header>
+<main id="app"></main>
+<nav id="nav"></nav>
+<div class="toast" id="toast"></div>
+<script src="data.js"></script>
+<script>
+"use strict";
+// ===================== データ準備 =====================
+const KIND = {am2:"午前Ⅱ"};
+const IMGDIR = "img/";
+// 本文中の [[IMG:file]] を画像タグへ
+const rich = t => String(t).split(/(\[\[IMG:[^\]]+\]\])/).map(p=>{ const m=p.match(/^\[\[IMG:([^\]]+)\]\]$/); return m?`<img class="qimg inl" src="${IMGDIR}${encodeURIComponent(m[1])}" alt="図">`:esc(p); }).join("");
+const plain = t => String(t).replace(/\[\[IMG:[^\]]+\]\]/g,"（図）");
+const KEYS = ["ア","イ","ウ","エ"];
+const EX = {}; DATA.exams.forEach((e,i)=>{EX[e.code]=Object.assign({order:i},e)});
+const Q = {}; DATA.questions.forEach(q=>{Q[q.id]=q});
+const GROUP = {};   // g -> [qid...]（同一問題の出題回一覧、新しい順）
+DATA.questions.forEach(q=>{(GROUP[q.g]=GROUP[q.g]||[]).push(q.id)});
+Object.values(GROUP).forEach(a=>a.sort((x,y)=>EX[Q[x].ex].order-EX[Q[y].ex].order || (Q[x].kind<Q[y].kind?-1:1) || Q[x].no-Q[y].no));
+const CATS = []; DATA.questions.forEach(q=>{if(!CATS.includes(q.cat))CATS.push(q.cat)});
+CATS.sort((a,b)=>(DATA.catOrder||[]).indexOf(a)-(DATA.catOrder||[]).indexOf(b));
+const exLabel = id => { const q=Q[id]; return `${EX[q.ex].label} ${KIND[q.kind]} 問${q.no}`; };
+const siteUrl = id => { const q=Q[id]; return `https://www.db-siken.com/kakomon/${q.ex}/${q.kind}_${q.no}.html`; };
+
+// ===================== 保存データ =====================
+const SKEY = "dbdojo.v1";
+const DEF = () => ({
+  settings:{kinds:["am2"], exams:DATA.exams.map(e=>e.code), dedup:true, order:"random", cats:[], onlyUnsolved:false},
+  session:null,          // {key, queue:[qid], pos, n, c}
+  log:[],                // [qid, ok(1/0), 日付(yyyymmdd)]
+  wrong:{},              // g -> {n:誤答回数, t:最終日時}
+  review:{},             // g -> 追加日時
+  memo:{},               // g -> テキスト
+  current:null,          // 回答中の状態 {qid, picked}
+  elim:null              // 消去法で除外中の選択肢 {qid, keys:[]}
+});
+let S;
+function load(){ try{ S = Object.assign(DEF(), JSON.parse(localStorage.getItem(SKEY)||"{}")); }catch(e){ S = DEF(); } }
+function save(){ try{ localStorage.setItem(SKEY, JSON.stringify(S)); }catch(e){ toast("保存に失敗しました（容量不足の可能性）"); } }
+load();
+
+// ===================== 共通 =====================
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pct = (c,n) => n ? Math.round(c*1000/n)/10 : 0;
+const today = () => { const d=new Date(); return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(); };
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1600); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function totals(){ let c=0; for(const l of S.log) c+=l[1]; return {n:S.log.length, c}; }
+function updHeader(){ const t=totals(); $("#hstat").innerHTML = `累計 ${t.n}問<br>正答率 ${pct(t.c,t.n)}%`; }
+
+const ICON = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>',
+  wrong:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3L12 17.5 6.5 20.4l1-6.3L3 9.7l6.2-.9z"/></svg>',
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'
+};
+let VIEW = "home";
+function renderNav(){
+  const wn=Object.keys(S.wrong).length, rn=Object.keys(S.review).length;
+  const items=[["home","出題"],["wrong","間違い"],["review","再確認"],["stats","分析"],["data","設定"]];
+  $("#nav").innerHTML = items.map(([k,l])=>{
+    const ic = {home:ICON.home,wrong:ICON.wrong,review:ICON.star,stats:ICON.chart,data:ICON.gear}[k];
+    const b = k==="wrong"&&wn ? ` <span class="badge">${wn}</span>` : k==="review"&&rn ? ` <span class="badge" style="background:var(--star)">${rn}</span>`:"";
+    return `<button class="${VIEW===k||(VIEW==="quiz"&&k==="home")?"on":""}" data-go="${k}">${ic}<span>${l}${b}</span></button>`;
+  }).join("");
+}
+$("#nav").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b) go(b.dataset.go); });
+function go(v){ VIEW=v; renderNav(); updHeader(); window.scrollTo(0,0); ({home:viewHome,quiz:viewQuiz,wrong:()=>viewList("wrong"),review:()=>viewList("review"),stats:viewStats,data:viewData,single:viewSingle})[v](); }
+
+// ===================== 出題対象 =====================
+function sessKey(st){ return JSON.stringify([st.kinds.slice().sort(),st.exams.slice().sort(),st.dedup,st.order,st.cats.slice().sort(),st.onlyUnsolved]); }
+function solvedSet(){ const s=new Set(); for(const l of S.log) if(l[1]) s.add(Q[l[0]]?.g); return s; }
+function buildPool(st){
+  const exs=new Set(st.exams), kinds=new Set(st.kinds), cats=new Set(st.cats);
+  let qs = DATA.questions.filter(q=>exs.has(q.ex)&&kinds.has(q.kind)&&(!cats.size||cats.has(q.cat)));
+  if(st.dedup){ const seen=new Set(); qs = qs.filter(q=>{ if(seen.has(q.g)) return false; seen.add(q.g); return true; }); }
+  if(st.onlyUnsolved){ const s=solvedSet(); qs=qs.filter(q=>!s.has(q.g)); }
+  let ids = qs.map(q=>q.id);
+  if(st.order==="random") shuffle(ids);
+  else ids.sort((a,b)=>EX[Q[a].ex].order-EX[Q[b].ex].order||(Q[a].kind<Q[b].kind?-1:1)||Q[a].no-Q[b].no);
+  return ids;
+}
+
+// ===================== ホーム =====================
+function viewHome(){
+  const st=S.settings, ses=S.session, sameKey = ses && ses.key===sessKey(st);
+  const t=totals();
+  const pool = buildPoolCount(st);
+  const exHtml = DATA.exams.map(e=>`<label class="chk ${st.exams.includes(e.code)?"on":""}"><input type="checkbox" data-ex="${e.code}" ${st.exams.includes(e.code)?"checked":""}>${esc(e.label)}</label>`).join("");
+  const catHtml = CATS.map(c=>`<label class="chk ${st.cats.includes(c)?"on":""}" style="font-size:12.5px"><input type="checkbox" data-cat="${esc(c)}" ${st.cats.includes(c)?"checked":""}>${esc(c)}</label>`).join("");
+  let resume = "";
+  if(ses && ses.pos < ses.queue.length){
+    resume = sameKey
+      ? `<button class="btn pri block" id="resume">続きから出題（${ses.pos+1} / ${ses.queue.length}問目）</button><div class="progress"><i style="width:${ses.pos*100/ses.queue.length}%"></i></div>`
+      : `<div class="muted" style="margin-bottom:8px">※出題範囲が変更されています。「出題を開始」で新しい範囲から出題します（前回の続き：${ses.pos} / ${ses.queue.length}問）。<button class="btn sm" id="revert">前回の範囲に戻す</button></div>`;
+  } else if(ses && ses.queue.length && ses.pos>=ses.queue.length && sameKey){
+    resume = `<div class="result ok" style="margin:0 0 10px">この範囲の全${ses.queue.length}問を出題し終えました（今回の正答率 ${pct(ses.c,ses.n)}%）</div>`;
+  }
+  $("#app").innerHTML = `
+  <div class="card"><div class="stats3">
+    <div><b>${t.n}</b><span>累計解答数</span></div>
+    <div><b>${t.c}</b><span>正解数</span></div>
+    <div><b>${pct(t.c,t.n)}%</b><span>正答率</span></div></div></div>
+  <div class="card">
+    ${resume}
+    <button class="btn ${sameKey&&ses&&ses.pos<ses.queue.length?"":"pri"} block" id="start" ${pool?"":"disabled"}>${sameKey&&ses&&ses.pos<ses.queue.length?"最初から出題し直す":"出題を開始"}（${pool}問）</button>
+  </div>
+  <div class="card"><h2>試験回を指定<span class="r"><button class="btn sm" id="exAll">全選択</button> <button class="btn sm" id="exNone">全解除</button> <button class="btn sm" id="exRecent">直近10回</button></span></h2>
+    <div class="grid">${exHtml}</div></div>
+  <div class="card"><h2>分野で絞り込み<span class="r">未選択＝全分野</span></h2><div class="grid">${catHtml}</div></div>
+  <div class="card"><h2>出題方法</h2>
+    <div class="seg" style="margin-bottom:8px"><button data-order="random" class="${st.order==="random"?"on":""}">ランダム</button><button data-order="seq" class="${st.order==="seq"?"on":""}">年度順</button></div>
+    <label class="switch">同じ問題は1回のみ出題（重複を統合）<input type="checkbox" id="dedup" ${st.dedup?"checked":""}></label>
+    <label class="switch">まだ正解していない問題だけ出題<input type="checkbox" id="unsolved" ${st.onlyUnsolved?"checked":""}></label>
+    <div class="muted">収録：${DATA.questions.length}問（重複統合後 ${Object.keys(GROUP).length}問）</div>
+  </div>
+  <div class="foot">出典：IPA 情報処理推進機構 データベーススペシャリスト試験 午前Ⅱ 過去問題・解答例</div>`;
+  const app=$("#app");
+  app.querySelectorAll("[data-ex]").forEach(c=>c.onchange=()=>{ toggle(st.exams,c.dataset.ex,c.checked); saveHome(); });
+  app.querySelectorAll("[data-cat]").forEach(c=>c.onchange=()=>{ toggle(st.cats,c.dataset.cat,c.checked); saveHome(); });
+  app.querySelectorAll("[data-order]").forEach(b=>b.onclick=()=>{ st.order=b.dataset.order; saveHome(); });
+  $("#dedup").onchange=e=>{ st.dedup=e.target.checked; saveHome(); };
+  $("#unsolved").onchange=e=>{ st.onlyUnsolved=e.target.checked; saveHome(); };
+  $("#exAll").onclick=()=>{ st.exams=DATA.exams.map(e=>e.code); saveHome(); };
+  $("#exNone").onclick=()=>{ st.exams=[]; saveHome(); };
+  $("#exRecent").onclick=()=>{ st.exams=DATA.exams.slice(0,10).map(e=>e.code); saveHome(); };
+  if($("#resume")) $("#resume").onclick=()=>go("quiz");
+  if($("#revert")) $("#revert").onclick=()=>{ const k=JSON.parse(ses.key); Object.assign(st,{kinds:k[0],exams:k[1],dedup:k[2],order:k[3],cats:k[4],onlyUnsolved:k[5]}); saveHome(); };
+  $("#start").onclick=()=>{
+    if(ses && ses.pos>0 && ses.pos<ses.queue.length && !confirm("途中の出題状況を破棄して、新しく出題を開始しますか？")) return;
+    S.session={key:sessKey(st), queue:buildPool(st), pos:0, n:0, c:0}; S.current=null; save(); go("quiz");
+  };
+}
+function buildPoolCount(st){ const o=st.order; st.order="seq"; const n=buildPool(st).length; st.order=o; return n; }
+function toggle(arr,v,on){ const i=arr.indexOf(v); if(on&&i<0) arr.push(v); if(!on&&i>=0) arr.splice(i,1); }
+function saveHome(){ save(); viewHome(); }
+
+// ===================== 問題表示（共通部品） =====================
+function imgBlock(q){ return ""; }
+function elimKeys(q){ return S.elim && S.elim.qid===q.id ? S.elim.keys : []; }
+function questionHtml(q, picked){
+  const answered = picked!=null;
+  const el = elimKeys(q);
+  const xb = k => answered ? "" : `<button class="xbtn" data-elim="${k}" aria-label="${k}を除外">${el.includes(k)?"↺":"✕"}</button>`;
+  const g = q.g, occ = GROUP[g];
+  const isRev = !!S.review[g];
+  let ch;
+  if(q.ch && q.ch.length===4){
+    ch = `<div class="choices">${q.ch.map((t,i)=>{
+      const k=KEYS[i]; let cls="";
+      if(answered){ if(k===q.ans) cls="ok"; else if(k===picked) cls="ng"; }
+      return `<div class="crow ${el.includes(k)?"out":""}"><button class="choice ${cls}" data-pick="${k}" ${answered?"disabled":""}><span class="k">${k}</span><span class="t">${rich(t)}</span></button>${xb(k)}</div>`;
+    }).join("")}</div>${answered?"":`<div class="elimhint">✕ で「明らかに違う」選択肢を消せます（↺ で戻す）</div>`}`;
+  } else {
+    ch = `<div class="choices small">${KEYS.map(k=>{ let cls=""; if(answered){ if(k===q.ans) cls="ok"; else if(k===picked) cls="ng"; }
+      return `<div class="crow ${el.includes(k)?"out":""}"><button class="choice ${cls}" data-pick="${k}" ${answered?"disabled":""}><span class="k">${k}</span></button>${xb(k)}</div>`; }).join("")}</div>${answered?"":`<div class="elimhint">✕ で「明らかに違う」選択肢を消せます（↺ で戻す）</div>`}`;
+  }
+  let res = "";
+  if(answered){
+    const ok = picked===q.ans;
+    const hist = S.log.filter(l=>Q[l[0]]?.g===g); const hc = hist.reduce((a,l)=>a+l[1],0);
+    res = `<div class="result ${ok?"ok":"ng"}">${ok?"⭕ 正解":"❌ 不正解"}　正解は「${q.ans}」<span style="font-weight:400;font-size:12.5px">（この問題の通算 ${hc}/${hist.length} 正解）</span></div>
+    <div class="card" style="margin:12px 0 0;padding:12px">
+      <h2 style="margin-bottom:4px">出題された試験回（${occ.length}回）</h2>
+      <ul class="occ">${occ.map(id=>`<li><span>${esc(exLabel(id))}</span><a href="${siteUrl(id)}" target="_blank" rel="noopener">過去問道場で解説 ↗</a></li>`).join("")}</ul>
+      <div class="muted" style="margin-top:4px">※解説リンクはオンライン時のみ表示できます</div>
+    </div>
+    <div class="card" style="margin:12px 0 0;padding:12px">
+      <h2 style="margin-bottom:6px">自分用の解説メモ</h2>
+      <textarea id="memo" placeholder="ポイントや覚え方をメモ（オフラインで保存されます）">${esc(S.memo[g]||"")}</textarea>
+    </div>`;
+  }
+  return `
+  <div class="qhead"><span class="tag">${esc(exLabel(q.id))}</span><span class="tag gray">${esc(q.cat)}${q.sub?" / "+esc(q.sub):""}</span>${occ.length>1?`<span class="tag gray">${occ.length}回出題</span>`:""}</div>
+  ${q.text?`<div class="qtext">${rich(q.text)}</div>`:""}
+  ${imgBlock(q)}
+  ${ch}${res}
+  <div class="toolbar"><button class="btn star ${isRev?"on":""}" id="revBtn">${isRev?"★ 再確認に登録済み":"☆ 再確認に追加"}</button>
+  ${answered&&S.wrong[g]?`<button class="btn ng" id="wrongDel">間違いリストから削除</button>`:""}</div>`;
+}
+function bindQuestion(q, onPick){
+  const app=$("#app");
+  app.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{
+    if(elimKeys(q).includes(b.dataset.pick)){ toast("除外中の選択肢です（↺ で戻せます）"); return; }
+    onPick(b.dataset.pick);
+  });
+  app.querySelectorAll("[data-elim]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.elim;
+    if(!S.elim || S.elim.qid!==q.id) S.elim={qid:q.id, keys:[]};
+    const ks=S.elim.keys, i=ks.indexOf(k);
+    if(i>=0) ks.splice(i,1); else ks.push(k);
+    save();
+    const on=ks.includes(k); b.closest(".crow").classList.toggle("out",on); b.textContent=on?"↺":"✕";
+  });
+  app.querySelectorAll(".qimg").forEach(i=>i.onclick=()=>i.classList.toggle("zoom"));
+  $("#revBtn").onclick=()=>{ if(S.review[q.g]) delete S.review[q.g]; else S.review[q.g]=Date.now(); save(); renderNav(); const on=!!S.review[q.g]; $("#revBtn").classList.toggle("on",on); $("#revBtn").textContent=on?"★ 再確認に登録済み":"☆ 再確認に追加"; toast(on?"再確認リストに追加しました":"再確認リストから外しました"); };
+  if($("#wrongDel")) $("#wrongDel").onclick=()=>{ delete S.wrong[q.g]; save(); renderNav(); $("#wrongDel").remove(); toast("間違いリストから削除しました"); };
+  if($("#memo")) $("#memo").oninput=e=>{ const v=e.target.value; if(v.trim()) S.memo[q.g]=v; else delete S.memo[q.g]; clearTimeout(bindQuestion._t); bindQuestion._t=setTimeout(save,400); };
+}
+function record(q, picked){
+  const ok = picked===q.ans ? 1 : 0;
+  S.log.push([q.id, ok, today()]);
+  if(!ok){ const w=S.wrong[q.g]||{n:0}; w.n++; w.t=Date.now(); S.wrong[q.g]=w; }
+  return ok;
+}
+
+// ===================== 出題画面 =====================
+function viewQuiz(){
+  const ses=S.session;
+  if(!ses || ses.pos>=ses.queue.length){ go("home"); return; }
+  const qid=ses.queue[ses.pos], q=Q[qid];
+  if(!q){ ses.pos++; save(); viewQuiz(); return; }
+  const picked = S.current && S.current.qid===qid ? S.current.picked : null;
+  $("#app").innerHTML = `
+    <div class="row" style="justify-content:space-between;font-size:13px"><span>${ses.pos+1} / ${ses.queue.length}問目</span><span class="muted">今回 ${ses.c}/${ses.n} 正解（${pct(ses.c,ses.n)}%）</span></div>
+    <div class="progress"><i style="width:${(ses.pos+(picked?1:0))*100/ses.queue.length}%"></i></div>
+    <div class="card">${questionHtml(q,picked)}</div>
+    ${picked?`<button class="btn pri block" id="next">${ses.pos+1<ses.queue.length?"次の問題へ":"結果を見る"}</button>`:`<button class="btn block" id="skip" style="margin-top:4px">この問題をスキップ</button>`}
+    <button class="btn block" id="toHome" style="margin-top:8px">中断してホームへ（続きから再開できます）</button>`;
+  bindQuestion(q, k=>{
+    const ok=record(q,k); ses.n++; ses.c+=ok; S.current={qid,picked:k}; save(); renderNav(); updHeader(); viewQuiz();
+  });
+  if($("#next")) $("#next").onclick=()=>{ ses.pos++; S.current=null; save(); if(ses.pos>=ses.queue.length){ toast(`終了！今回の正答率 ${pct(ses.c,ses.n)}%`); go("home"); } else { window.scrollTo(0,0); viewQuiz(); } };
+  if($("#skip")) $("#skip").onclick=()=>{ ses.pos++; S.current=null; save(); if(ses.pos>=ses.queue.length) go("home"); else { window.scrollTo(0,0); viewQuiz(); } };
+  $("#toHome").onclick=()=>go("home");
+}
+
+// ===================== 単問（リストから） =====================
+let SINGLE = null; // {list:[g], idx, from, picked}
+function viewSingle(){
+  const g = SINGLE.list[SINGLE.idx]; const occ=GROUP[g];
+  if(!occ){ go(SINGLE.from); return; }
+  const q = Q[occ[0]];
+  $("#app").innerHTML = `
+    <div class="row" style="justify-content:space-between;font-size:13px"><button class="btn sm" id="back">← ${SINGLE.from==="wrong"?"間違いリスト":"再確認リスト"}へ</button><span>${SINGLE.idx+1} / ${SINGLE.list.length}</span></div>
+    <div class="card" style="margin-top:10px">${questionHtml(q,SINGLE.picked)}</div>
+    <div class="row"><button class="btn" style="flex:1" id="prev" ${SINGLE.idx?"":"disabled"}>前へ</button><button class="btn pri" style="flex:1" id="nxt" ${SINGLE.idx+1<SINGLE.list.length?"":"disabled"}>次へ</button></div>`;
+  bindQuestion(q, k=>{ record(q,k); SINGLE.picked=k; save(); renderNav(); updHeader(); viewSingle(); });
+  $("#back").onclick=()=>go(SINGLE.from);
+  $("#prev").onclick=()=>{ SINGLE.idx--; SINGLE.picked=null; window.scrollTo(0,0); viewSingle(); };
+  $("#nxt").onclick=()=>{ SINGLE.idx++; SINGLE.picked=null; window.scrollTo(0,0); viewSingle(); };
+}
+
+// ===================== 間違い / 再確認リスト =====================
+let LISTCAT = "";
+function viewList(kind){
+  const src = S[kind];
+  let gs = Object.keys(src).filter(g=>GROUP[g]);
+  if(kind==="wrong") gs.sort((a,b)=>src[b].n-src[a].n || src[b].t-src[a].t); else gs.sort((a,b)=>src[b]-src[a]);
+  const cats = [...new Set(gs.map(g=>Q[GROUP[g][0]].cat))];
+  if(LISTCAT && !cats.includes(LISTCAT)) LISTCAT="";
+  const shown = LISTCAT ? gs.filter(g=>Q[GROUP[g][0]].cat===LISTCAT) : gs;
+  const title = kind==="wrong" ? "間違えた問題" : "再確認する問題";
+  $("#app").innerHTML = `
+  <div class="card"><h2>${title}<span class="r">${gs.length}問</span></h2>
+    ${gs.length?`<div class="row" style="margin-bottom:6px">
+      <select id="lcat" class="btn sm" style="flex:1"><option value="">すべての分野</option>${cats.map(c=>`<option ${c===LISTCAT?"selected":""}>${esc(c)}</option>`).join("")}</select>
+      <button class="btn pri sm" id="drill">この${shown.length}問を順に解く</button></div>`:""}
+    <div class="list">${shown.length? shown.map(g=>{ const q=Q[GROUP[g][0]]; const preview=plain(q.text||"（図の問題）").replace(/\s+/g," ").slice(0,80);
+      const info = kind==="wrong" ? `誤答 ${src[g].n}回` : new Date(src[g]).toLocaleDateString("ja-JP");
+      return `<div class="item"><div class="main" data-open="${g}"><div class="ttl">${esc(exLabel(q.id))}・${esc(q.cat)}・${info}${GROUP[g].length>1?`・${GROUP[g].length}回出題`:""}</div><div class="ex">${esc(preview)}</div></div><button class="btn sm ng" data-del="${g}">削除</button></div>`; }).join("")
+      : `<div class="empty">${kind==="wrong"?"間違えた問題はまだありません":"「☆ 再確認に追加」で問題を登録できます"}</div>`}</div>
+    ${gs.length?`<button class="btn ng sm" id="clearAll" style="margin-top:10px">リストをすべて削除</button>`:""}
+  </div>`;
+  const app=$("#app");
+  if($("#lcat")) $("#lcat").onchange=e=>{ LISTCAT=e.target.value; viewList(kind); };
+  app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ delete src[b.dataset.del]; save(); renderNav(); viewList(kind); toast("削除しました"); });
+  app.querySelectorAll("[data-open]").forEach(d=>d.onclick=()=>{ SINGLE={list:shown, idx:shown.indexOf(d.dataset.open), from:kind, picked:null}; go("single"); });
+  if($("#drill")) $("#drill").onclick=()=>{ SINGLE={list:shown, idx:0, from:kind, picked:null}; go("single"); };
+  if($("#clearAll")) $("#clearAll").onclick=()=>{ if(confirm(`${title}のリストをすべて削除しますか？`)){ S[kind]={}; save(); renderNav(); viewList(kind); } };
+}
+
+// ===================== 分析 =====================
+function agg(keyFn){
+  const m=new Map();
+  for(const [id,ok] of S.log){ const q=Q[id]; if(!q) continue; const k=keyFn(q); if(k==null) continue; const r=m.get(k)||{n:0,c:0}; r.n++; r.c+=ok; m.set(k,r); }
+  return m;
+}
+function tableHtml(rows, opt={}){
+  if(!rows.length) return `<div class="empty">まだデータがありません</div>`;
+  const avg = opt.avg ?? 0;
+  return `<table class="st"><tr><th>${opt.label||"分野"}</th><th>解答</th><th>正答率</th><th class="barcell"></th></tr>${rows.map(r=>{
+    const p=pct(r.c,r.n), low = r.n>=3 && p < avg-10;
+    return `<tr><td class="${low?"weak":""}">${esc(r.k)}${low?" ⚠":""}${r.extra?`<div class="muted" style="font-size:11px">${r.extra}</div>`:""}</td><td>${r.n}</td><td class="${low?"weak":""}">${r.n?p+"%":"-"}</td><td class="barcell"><div class="bar"><i class="${low?"low":""}" style="width:${p}%"></i></div></td></tr>`; }).join("")}</table>`;
+}
+let STATSORT="weak";
+function viewStats(){
+  const t=totals(), avg=pct(t.c,t.n);
+  const byCat=agg(q=>q.cat), bySub=agg(q=>q.sub?q.cat+" / "+q.sub:null), byEx=agg(q=>q.ex);
+  // 網羅率
+  const tried=new Set(S.log.map(l=>Q[l[0]]?.g)); const solved=solvedSet();
+  const catTotal={}; Object.keys(GROUP).forEach(g=>{ const c=Q[GROUP[g][0]].cat; catTotal[c]=(catTotal[c]||0)+1; });
+  const sorter = STATSORT==="weak" ? (a,b)=>(pct(a.c,a.n)-pct(b.c,b.n))||(b.n-a.n) : (a,b)=>b.n-a.n;
+  const catRows=[...byCat].map(([k,r])=>({k,...r,extra:`収録 ${catTotal[k]||0}問中 ${[...solved].filter(g=>GROUP[g]&&Q[GROUP[g][0]].cat===k).length}問 正解済`})).sort(sorter);
+  const subRows=[...bySub].map(([k,r])=>({k,...r})).filter(r=>r.n>0).sort(sorter);
+  const exRows=DATA.exams.filter(e=>byEx.has(e.code)).map(e=>({k:e.label,...byEx.get(e.code)}));
+  // 直近14日
+  const days=[]; const d0=new Date(); for(let i=13;i>=0;i--){ const d=new Date(d0); d.setDate(d0.getDate()-i); days.push(d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate()); }
+  const dm=new Map(days.map(d=>[d,{n:0,c:0}])); for(const l of S.log){ const r=dm.get(l[2]); if(r){ r.n++; r.c+=l[1]; } }
+  const maxN=Math.max(1,...[...dm.values()].map(r=>r.n));
+  const weakest=catRows.filter(r=>r.n>=5).sort((a,b)=>pct(a.c,a.n)-pct(b.c,b.n)).slice(0,3);
+  $("#app").innerHTML = `
+  <div class="card"><div class="stats3">
+    <div><b>${t.n}</b><span>累計解答数</span></div><div><b>${avg}%</b><span>正答率</span></div>
+    <div><b>${tried.size}</b><span>/ ${Object.keys(GROUP).length} 問に挑戦</span></div></div>
+  </div>
+  ${weakest.length?`<div class="card"><h2>苦手な分野（5問以上解答・正答率の低い順）</h2>${weakest.map(r=>`<div class="row" style="justify-content:space-between;padding:4px 0"><span class="weak">${esc(r.k)}</span><span>${pct(r.c,r.n)}%（${r.c}/${r.n}）</span></div>`).join("")}
+    <button class="btn sm pri" id="drillWeak" style="margin-top:8px">苦手分野だけで出題範囲を設定</button></div>`:""}
+  <div class="card"><h2>分野別<span class="r"><span class="seg" style="display:inline-flex"><button data-s="weak" class="${STATSORT==="weak"?"on":""}">苦手順</button><button data-s="n" class="${STATSORT==="n"?"on":""}">解答数順</button></span></span></h2>
+    ${tableHtml(catRows,{avg})}<div class="muted" style="margin-top:6px">⚠ = 3問以上解答し、全体平均より10ポイント以上低い分野</div></div>
+  <div class="card"><h2>詳細分野別</h2>${tableHtml(subRows,{avg})}</div>
+  <div class="card"><h2>直近14日の解答数と正解数</h2>
+    <div class="trend">${days.map(d=>{ const r=dm.get(d); return `<div title="${r.c}/${r.n}"><div class="b" style="height:${r.n*100/maxN}%"><i style="height:${r.n?r.c*100/r.n:0}%"></i></div><span>${d%100}</span></div>`; }).join("")}</div>
+    <div class="muted">濃い部分＝正解数、薄い部分＝不正解数</div></div>
+  <div class="card"><h2>試験回別</h2>${tableHtml(exRows,{avg,label:"試験回"})}</div>`;
+  $("#app").querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{ STATSORT=b.dataset.s; viewStats(); });
+  if($("#drillWeak")) $("#drillWeak").onclick=()=>{ S.settings.cats=weakest.map(r=>r.k); save(); toast("出題範囲を苦手分野に設定しました"); go("home"); };
+}
+
+// ===================== 設定・データ =====================
+function viewData(){
+  const t=totals();
+  $("#app").innerHTML = `
+  <div class="card"><h2>バックアップ</h2>
+    <div class="muted" style="margin-bottom:8px">解答履歴・リスト・メモは、この端末のブラウザ内に保存されています。機種変更やデータ消失に備えて、ときどきバックアップしてください。</div>
+    <div class="row"><button class="btn" id="exp">バックアップを保存</button><button class="btn" id="copy">テキストでコピー</button><label class="btn">復元（ファイル）<input type="file" id="imp" accept=".json,application/json,text/plain" hidden></label></div>
+    <details style="margin-top:10px"><summary>テキストを貼り付けて復元</summary><textarea id="pasteTxt" placeholder="バックアップのテキストを貼り付け"></textarea><button class="btn sm" id="pasteBtn" style="margin-top:6px">復元する</button></details>
+  </div>
+  <div class="card"><h2>リセット</h2>
+    <div class="row" style="flex-direction:column;align-items:stretch">
+      <button class="btn" data-reset="session">出題の途中状態をリセット</button>
+      <button class="btn" data-reset="log">成績（累計解答数・正答率・分析）をリセット（${t.n}件）</button>
+      <button class="btn" data-reset="wrong">間違いリストをリセット（${Object.keys(S.wrong).length}件）</button>
+      <button class="btn" data-reset="review">再確認リストをリセット（${Object.keys(S.review).length}件）</button>
+      <button class="btn" data-reset="memo">メモをすべて削除（${Object.keys(S.memo).length}件）</button>
+      <button class="btn ng" data-reset="all">すべてリセット</button>
+    </div></div>
+  <div class="card"><h2>このアプリについて</h2>
+    <div class="muted">収録：${DATA.exams.length}回分・${DATA.questions.length}問（データ作成日 ${esc(DATA.built||"")}）<br>問題・選択肢・正答は IPA（独立行政法人 情報処理推進機構）が公開しているデータベーススペシャリスト試験の過去問題・解答例に基づきます（テキストは「データベーススペシャリスト.com 過去問道場」掲載分を参照）。<br>分野は同サイトの分類（中分類／小分類）に従います。<br>解説リンク先は「データベーススペシャリスト.com（過去問道場）」です。</div></div></div>`;
+  const app=$("#app");
+  const dump = () => JSON.stringify({app:"dbdojo",v:1,at:new Date().toISOString(),data:S});
+  $("#exp").onclick=()=>{ const b=new Blob([dump()],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=`dbdojo-backup-${today()}.json`; document.body.appendChild(a); a.click(); a.remove(); };
+  $("#copy").onclick=async()=>{ try{ await navigator.clipboard.writeText(dump()); toast("コピーしました"); }catch(e){ $("#pasteTxt").value=dump(); app.querySelector("details").open=true; toast("下の欄のテキストを手動でコピーしてください"); } };
+  const restore = txt => { try{ const o=JSON.parse(txt); if(o.app!=="dbdojo"||!o.data) throw 0; if(!confirm("現在のデータを上書きして復元しますか？")) return; S=Object.assign(DEF(),o.data); save(); toast("復元しました"); go("home"); }catch(e){ alert("バックアップデータを読み込めませんでした"); } };
+  $("#imp").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>restore(r.result); r.readAsText(f); };
+  $("#pasteBtn").onclick=()=>restore($("#pasteTxt").value);
+  app.querySelectorAll("[data-reset]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.reset; if(!confirm(b.textContent.replace(/（.*）/,"")+" を実行しますか？\n元に戻せません。")) return;
+    if(k==="all"){ S=DEF(); } else if(k==="session"){ S.session=null; S.current=null; } else if(k==="log"){ S.log=[]; } else S[k]={};
+    save(); renderNav(); updHeader(); viewData(); toast("リセットしました");
+  });
+}
+
+// ===================== 起動 =====================
+if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostname==="localhost")){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+go("home");
+</script>
+</body>
+</html>
